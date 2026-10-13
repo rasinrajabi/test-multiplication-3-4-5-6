@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>×3 ×4 ×5 ×6 :3 :4 :5 :6</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(160deg, #FFFBEE 0%, #EEF4FF 50%, #E8F6EE 100%);
+    color: #2A3A54;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    position: relative;
+  }
+
+  /* ============ ФОН: статичные математические элементы ============ */
+  .math-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+  }
+  .math-bg .num {
+    position: absolute;
+    font-weight: 900;
+    line-height: 1;
+    user-select: none;
+  }
+  .math-bg .n0 { left: 3%;  top: 6%;  font-size: 130px; color: rgba(127,107,224,.10); }
+  .math-bg .n1 { left: 90%; top: 12%; font-size: 100px; color: rgba(240,155,61,.11); }
+  .math-bg .n2 { left: 8%;  top: 76%; font-size: 120px; color: rgba(61,166,115,.10); }
+  .math-bg .n3 { left: 86%; top: 74%; font-size: 140px; color: rgba(224,107,156,.09); }
+  .math-bg .n4 { left: 44%; top: 3%;  font-size: 80px;  color: rgba(62,123,250,.09); }
+  .math-bg .n5 { left: 50%; top: 88%; font-size: 90px;  color: rgba(127,107,224,.09); }
+  .math-bg .n6 { left: 20%; top: 42%; font-size: 70px;  color: rgba(240,155,61,.09); }
+  .math-bg .n7 { left: 72%; top: 46%; font-size: 65px;  color: rgba(62,123,250,.09); }
+  .math-bg .n8 { left: 34%; top: 20%; font-size: 60px;  color: rgba(224,90,78,.09); }
+  .math-bg .n9 { left: 60%; top: 62%; font-size: 55px;  color: rgba(61,166,115,.09); }
+
+  .math-bg .sign {
+    position: absolute;
+    font-weight: 900;
+    line-height: 1;
+    user-select: none;
+  }
+  .math-bg .s1 { left: 14%; top: 22%; font-size: 84px; color: rgba(224,90,78,.10); }
+  .math-bg .s2 { left: 78%; top: 34%; font-size: 72px; color: rgba(61,166,115,.10); }
+  .math-bg .s3 { left: 30%; top: 62%; font-size: 78px; color: rgba(62,123,250,.10); }
+  .math-bg .s4 { left: 62%; top: 18%; font-size: 70px; color: rgba(127,107,224,.11); }
+  .math-bg .s5 { left: 4%;  top: 54%; font-size: 62px; color: rgba(240,155,61,.11); }
+  .math-bg .s6 { left: 88%; top: 56%; font-size: 76px; color: rgba(224,107,156,.10); }
+  .math-bg .s7 { left: 48%; top: 34%; font-size: 66px; color: rgba(62,123,250,.09); }
+
+  .math-bg .ruler { position: absolute; opacity: .16; }
+  .math-bg .r1 { left: -30px; top: 32%; transform: rotate(-18deg); }
+  .math-bg .r2 { right: -30px; top: 50%; transform: rotate(14deg) scaleX(-1); }
+
+  .math-bg .tri { position: absolute; opacity: .15; }
+  .math-bg .t1 { left: 12%; top: 8%; }
+  .math-bg .t2 { left: 82%; top: 80%; }
+  .math-bg .t3 { left: 52%; top: 50%; }
+  .math-bg .t4 { left: 32%; top: 28%; }
+
+  .math-bg .sq { position: absolute; opacity: .15; }
+  .math-bg .q1 { left: 66%; top: 60%; }
+  .math-bg .q2 { left: 3%;  top: 30%; }
+  .math-bg .q3 { left: 90%; top: 36%; }
+  .math-bg .q4 { left: 26%; top: 82%; }
+
+  /* ============ Приложение ============ */
+  .app {
+    position: relative;
+    z-index: 1;
+    width: min(660px, 100%);
+    max-height: calc(100vh - 32px);
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: rgba(255, 255, 255, 0.88);
+    border: 2px solid rgba(62, 123, 250, 0.18);
+    border-radius: 28px;
+    padding: 24px 30px 34px;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.6),
+      0 30px 70px rgba(62, 123, 250, 0.15),
+      0 0 60px rgba(127, 107, 224, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+  }
+  .app::-webkit-scrollbar { width: 8px; }
+  .app::-webkit-scrollbar-track { background: transparent; }
+  .app::-webkit-scrollbar-thumb {
+    background: rgba(62, 123, 250, 0.25);
+    border-radius: 99px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #4A78D0;
+  }
+  .brand-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3E7BFA, #7F6BE0);
+    box-shadow: 0 0 12px rgba(62,123,250,.55);
+    animation: pulseDot 2s ease-in-out infinite;
+  }
+  @keyframes pulseDot {
+    0%, 100% { transform: scale(1);   opacity: 1; }
+    50%      { transform: scale(1.5); opacity: 0.55; }
+  }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 30px;
+  }
+
+  .progress-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .progress-bar {
+    flex: 1;
+    height: 8px;
+    background: rgba(62, 123, 250, 0.12);
+    border-radius: 999px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(62, 123, 250, 0.08);
+  }
+  #fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #3E7BFA, #7F6BE0, #F09B3D);
+    border-radius: 999px;
+    transition: width 0.35s ease;
+    box-shadow: 0 0 14px rgba(62, 123, 250, 0.55);
+  }
+
+  #counter {
+    font-size: 14px;
+    font-weight: 800;
+    color: #2756B5;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    text-shadow: 0 0 12px rgba(62, 123, 250, 0.35);
+  }
+
+  .timer {
+    font-family: 'SF Mono', Menlo, Consolas, monospace;
+    font-size: clamp(19px, 3.2vw, 26px);
+    font-weight: 800;
+    color: #B03E78;
+    letter-spacing: 1px;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 14px rgba(224, 107, 156, 0.35);
+  }
+
+  .stage {
+    text-align: center;
+    padding: 10px 0 4px;
+  }
+
+  .equation {
+    font-size: clamp(56px, 12vw, 96px);
+    font-weight: 800;
+    color: #2A3A54;
+    letter-spacing: 4px;
+    line-height: 1.1;
+    margin-bottom: 34px;
+    text-shadow:
+      0 0 24px rgba(62, 123, 250, 0.15),
+      0 0 60px rgba(127, 107, 224, 0.12);
+    transition: transform 0.2s ease;
+  }
+
+  .stage.correct .equation {
+    animation: popCorrect 0.4s ease;
+    color: #1F7A4C;
+    text-shadow: 0 0 30px rgba(61, 166, 115, 0.55), 0 0 70px rgba(61, 166, 115, 0.3);
+  }
+  @keyframes popCorrect {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.12); }
+    100% { transform: scale(1); }
+  }
+
+  .stage.wrong .equation {
+    animation: shakeWrong 0.5s ease;
+    color: #C0322A;
+    text-shadow: 0 0 30px rgba(224, 90, 78, 0.55), 0 0 70px rgba(224, 90, 78, 0.3);
+  }
+  @keyframes shakeWrong {
+    10%, 90% { transform: translateX(-6px); }
+    20%, 80% { transform: translateX(8px); }
+    30%, 50%, 70% { transform: translateX(-10px); }
+    40%, 60% { transform: translateX(10px); }
+  }
+
+  .input-wrap {
+    position: relative;
+    display: inline-block;
+  }
+
+  #answer {
+    font-family: inherit;
+    font-size: clamp(36px, 7vw, 52px);
+    font-weight: 800;
+    text-align: center;
+    color: #2756B5;
+    width: clamp(180px, 40vw, 270px);
+    padding: 10px 20px;
+    background: #FFFFFF;
+    border: 3px solid rgba(62, 123, 250, 0.35);
+    border-radius: 20px;
+    outline: none;
+    caret-color: #3E7BFA;
+    transition: border-color 0.2s, box-shadow 0.25s, background 0.25s;
+    font-variant-numeric: tabular-nums;
+    box-shadow: 0 8px 20px rgba(62, 123, 250, 0.1);
+    -moz-appearance: textfield;
+  }
+  #answer::-webkit-outer-spin-button,
+  #answer::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  #answer:focus {
+    border-color: #3E7BFA;
+    background: #FFFFFF;
+    box-shadow:
+      0 0 0 6px rgba(62, 123, 250, 0.15),
+      0 12px 30px rgba(62, 123, 250, 0.22);
+  }
+
+  .stage.correct #answer {
+    border-color: #3DA673;
+    background: linear-gradient(135deg,#ECF7E6,#D8EFC8);
+    color: #1F7A4C;
+    box-shadow:
+      0 0 0 6px rgba(61, 166, 115, 0.18),
+      0 12px 30px rgba(61, 166, 115, 0.28);
+  }
+  .stage.wrong #answer {
+    border-color: #E05A4E;
+    background: linear-gradient(135deg,#FCE4E0,#F8C4B8);
+    color: #8B1E12;
+    box-shadow:
+      0 0 0 6px rgba(224, 90, 78, 0.15),
+      0 12px 30px rgba(224, 90, 78, 0.25);
+  }
+
+  .correct-answer {
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    transform: translateX(-50%);
+    margin-top: 14px;
+    font-size: 22px;
+    font-weight: 800;
+    color: #1F7A4C;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s;
+    text-shadow: 0 0 20px rgba(61, 166, 115, 0.4);
+  }
+  .stage.wrong .correct-answer {
+    opacity: 1;
+  }
+
+  .next-row {
+    margin-top: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+  }
+
+  .next-btn {
+    width: 72px;
+    height: 72px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #2756B5;
+    background: #FFFFFF;
+    border: 2.5px solid rgba(62, 123, 250, 0.32);
+    box-shadow:
+      0 8px 22px rgba(62, 123, 250, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    transition: transform 0.15s, box-shadow 0.25s, border-color 0.25s,
+                background 0.25s, color 0.25s, opacity 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .next-btn svg { width: 34px; height: 34px; display: block; }
+  .next-btn:hover {
+    color: #FFFFFF;
+    border-color: #3E7BFA;
+    background: linear-gradient(135deg, #3E7BFA, #7F6BE0);
+    box-shadow: 0 14px 32px rgba(62, 123, 250, 0.4);
+    transform: translateX(4px);
+  }
+  .next-btn:active { transform: scale(0.93); }
+
+  .final {
+    display: none;
+    text-align: center;
+    padding: 34px 0 10px;
+  }
+  .final.show {
+    display: block;
+    animation: fadeUp 0.55s ease;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .final-label {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #4A78D0;
+    margin-bottom: 14px;
+  }
+
+  .final-time {
+    font-family: 'SF Mono', Menlo, Consolas, monospace;
+    font-size: clamp(48px, 10vw, 76px);
+    font-weight: 800;
+    color: #B03E78;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+    font-variant-numeric: tabular-nums;
+    text-shadow:
+      0 0 24px rgba(224, 107, 156, 0.4),
+      0 0 70px rgba(224, 107, 156, 0.2);
+  }
+
+  .final-stats {
+    font-size: clamp(20px, 3vw, 26px);
+    font-weight: 800;
+    color: #2756B5;
+    margin-bottom: 30px;
+    text-shadow: 0 0 20px rgba(62, 123, 250, 0.3);
+  }
+
+  .name-block { margin-bottom: 26px; }
+
+  .name-label {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #4A78D0;
+    margin-bottom: 14px;
+  }
+
+  .name-form {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .name-input {
+    font-family: inherit;
+    font-size: 20px;
+    font-weight: 700;
+    color: #2A3A54;
+    padding: 14px 22px;
+    width: min(260px, 100%);
+    background: #FFFFFF;
+    border: 2.5px solid rgba(62, 123, 250, 0.3);
+    border-radius: 16px;
+    outline: none;
+    caret-color: #3E7BFA;
+    transition: border-color 0.2s, box-shadow 0.25s, background 0.25s;
+  }
+  .name-input::placeholder { color: rgba(74, 120, 208, 0.45); }
+  .name-input:focus {
+    border-color: #3E7BFA;
+    background: #FFFFFF;
+    box-shadow:
+      0 0 0 5px rgba(62, 123, 250, 0.15),
+      0 10px 28px rgba(62, 123, 250, 0.18);
+  }
+
+  .result-block { display: none; }
+  .result-block.show {
+    display: block;
+    animation: fadeUp 0.5s ease;
+  }
+
+  .result-hello {
+    font-size: clamp(21px, 4vw, 27px);
+    font-weight: 800;
+    color: #1F7A4C;
+    margin-bottom: 22px;
+    text-shadow: 0 0 22px rgba(61, 166, 115, 0.4);
+  }
+
+  .result-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
+    gap: 12px;
+    margin-bottom: 26px;
+  }
+
+  .result-item {
+    background: linear-gradient(160deg, #FFFFFF, #EEF4FF);
+    border: 2px solid rgba(62, 123, 250, 0.18);
+    border-radius: 16px;
+    padding: 14px 8px;
+    box-shadow: 0 8px 22px rgba(62, 123, 250, 0.08);
+  }
+
+  .ri-label {
+    display: block;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: #4A78D0;
+    margin-bottom: 8px;
+  }
+
+  .ri-value {
+    display: block;
+    font-size: clamp(17px, 3.2vw, 23px);
+    font-weight: 800;
+    color: #2756B5;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Секция ошибок */
+  .errors-container {
+    margin-bottom: 26px;
+    text-align: left;
+  }
+
+  .errors-btn {
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 800;
+    width: 100%;
+    padding: 12px 20px;
+    background: #FFFFFF;
+    border: 2px solid rgba(224, 90, 78, 0.3);
+    border-radius: 16px;
+    color: #C0322A;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 14px rgba(224, 90, 78, 0.08);
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .errors-btn:hover {
+    background: #FFF5F4;
+    border-color: #E05A4E;
+  }
+
+  .errors-list {
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+    max-height: 220px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .errors-list.show {
+    display: flex;
+  }
+
+  .error-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #FFFFFF;
+    border: 1.5px solid rgba(224, 90, 78, 0.2);
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .err-eq { color: #2A3A54; font-size: 16px; }
+  .err-user { color: #C0322A; font-weight: 800; text-decoration: line-through; }
+  .err-correct { color: #1F7A4C; font-weight: 800; }
+
+  .history-title {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #4A78D0;
+    margin-bottom: 12px;
+    text-align: left;
+  }
+
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 30px;
+  }
+
+  .history-row {
+    display: grid;
+    grid-template-columns: 30px 1fr auto auto;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 14px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #FFFFFF, #F3F7FF);
+    border: 2px solid rgba(62, 123, 250, 0.12);
+    font-size: 15px;
+    font-weight: 700;
+    text-align: left;
+    color: #2A3A54;
+  }
+  .history-row.current {
+    background: linear-gradient(135deg, #E1EBFF, #D6E3F7);
+    border-color: rgba(62, 123, 250, 0.5);
+    box-shadow: 0 0 24px rgba(62, 123, 250, 0.2);
+  }
+  .h-rank { color: #4A78D0; font-weight: 800; font-size: 14px; }
+  .h-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .h-score { color: #1F7A4C; font-variant-numeric: tabular-nums; font-size: 14px; }
+  .h-time {
+    color: #B03E78;
+    font-family: 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .restart {
+    font-family: inherit;
+    font-size: 21px;
+    font-weight: 800;
+    padding: 15px 48px;
+    background: linear-gradient(135deg, #3E7BFA, #7F6BE0, #E06B9C);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    box-shadow:
+      0 10px 28px rgba(62, 123, 250, 0.35),
+      0 0 40px rgba(224, 107, 156, 0.2);
+    transition: transform 0.15s, box-shadow 0.25s;
+  }
+  .restart:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 14px 36px rgba(62, 123, 250, 0.45),
+      0 0 60px rgba(224, 107, 156, 0.35);
+  }
+  .restart:active {
+    transform: translateY(0) scale(0.97);
+  }
+  .restart.small { font-size: 18px; padding: 14px 30px; }
+
+  .confetti {
+    position: fixed;
+    width: 8px;
+    height: 12px;
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 9999;
+    animation: confettiFall var(--dur) cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+  }
+  @keyframes confettiFall {
+    0% {
+      transform: translate(-50%, -50%) rotate(0deg) scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(var(--rot)) scale(0.5);
+      opacity: 0;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .app { padding: 18px 18px 26px; border-radius: 22px; }
+    .topbar { margin-bottom: 24px; gap: 12px; }
+    .brand { margin-bottom: 16px; font-size: 11px; letter-spacing: 2px; }
+    .equation { margin-bottom: 26px; }
+    .next-row { margin-top: 46px; }
+    .next-btn { width: 64px; height: 64px; }
+    .next-btn svg { width: 30px; height: 30px; }
+    .history-row { grid-template-columns: 24px 1fr auto auto; font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ ФОН: статичные математические элементы ============ -->
+<div class="math-bg">
+  <span class="num n0">0</span>
+  <span class="num n1">1</span>
+  <span class="num n2">2</span>
+  <span class="num n3">3</span>
+  <span class="num n4">4</span>
+  <span class="num n5">5</span>
+  <span class="num n6">6</span>
+  <span class="num n7">7</span>
+  <span class="num n8">8</span>
+  <span class="num n9">9</span>
+
+  <span class="sign s1">+</span>
+  <span class="sign s2">−</span>
+  <span class="sign s3">∙</span>
+  <span class="sign s4">:</span>
+  <span class="sign s5">=</span>
+  <span class="sign s6">%</span>
+  <span class="sign s7">≠</span>
+
+  <svg class="ruler r1" width="360" height="34" viewBox="0 0 360 34" xmlns="http://www.w3.org/2000/svg">
+    <rect x="0" y="0" width="360" height="34" rx="5" fill="#F0A64A"/>
+    <g stroke="#7a4a10" stroke-width="1.5">
+      <line x1="0" y1="0" x2="0" y2="20"/><line x1="20" y1="0" x2="20" y2="10"/>
+      <line x1="40" y1="0" x2="40" y2="20"/><line x1="60" y1="0" x2="60" y2="10"/>
+      <line x1="80" y1="0" x2="80" y2="20"/><line x1="100" y1="0" x2="100" y2="10"/>
+      <line x1="120" y1="0" x2="120" y2="20"/><line x1="140" y1="0" x2="140" y2="10"/>
+      <line x1="160" y1="0" x2="160" y2="20"/><line x1="180" y1="0" x2="180" y2="10"/>
+      <line x1="200" y1="0" x2="200" y2="20"/><line x1="220" y1="0" x2="220" y2="10"/>
+      <line x1="240" y1="0" x2="240" y2="20"/><line x1="260" y1="0" x2="260" y2="10"/>
+      <line x1="280" y1="0" x2="280" y2="20"/><line x1="300" y1="0" x2="300" y2="10"/>
+      <line x1="320" y1="0" x2="320" y2="20"/><line x1="340" y1="0" x2="340" y2="10"/>
+    </g>
+  </svg>
+  <svg class="ruler r2" width="320" height="30" viewBox="0 0 320 30" xmlns="http://www.w3.org/2000/svg">
+    <rect x="0" y="0" width="320" height="30" rx="5" fill="#3E7BFA"/>
+    <g stroke="#1e3a7a" stroke-width="1.4">
+      <line x1="0" y1="0" x2="0" y2="18"/><line x1="20" y1="0" x2="20" y2="9"/>
+      <line x1="40" y1="0" x2="40" y2="18"/><line x1="60" y1="0" x2="60" y2="9"/>
+      <line x1="80" y1="0" x2="80" y2="18"/><line x1="100" y1="0" x2="100" y2="9"/>
+      <line x1="120" y1="0" x2="120" y2="18"/><line x1="140" y1="0" x2="140" y2="9"/>
+      <line x1="160" y1="0" x2="160" y2="18"/><line x1="180" y1="0" x2="180" y2="9"/>
+      <line x1="200" y1="0" x2="200" y2="18"/><line x1="220" y1="0" x2="220" y2="9"/>
+      <line x1="240" y1="0" x2="240" y2="18"/><line x1="260" y1="0" x2="260" y2="9"/>
+      <line x1="280" y1="0" x2="280" y2="18"/><line x1="300" y1="0" x2="300" y2="9"/>
+    </g>
+  </svg>
+
+  <svg class="tri t1" width="90" height="80" viewBox="0 0 90 80" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="45,5 85,75 5,75" fill="none" stroke="#7F6BE0" stroke-width="3"/>
+  </svg>
+  <svg class="tri t2" width="110" height="100" viewBox="0 0 110 100" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="55,5 105,95 5,95" fill="#3DA673" opacity=".7"/>
+  </svg>
+  <svg class="tri t3" width="80" height="70" viewBox="0 0 80 70" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="40,5 75,65 5,65" fill="none" stroke="#E06B9C" stroke-width="3"/>
+  </svg>
+  <svg class="tri t4" width="70" height="60" viewBox="0 0 70 60" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="35,5 65,55 5,55" fill="#F09B3D" opacity=".6"/>
+  </svg>
+
+  <svg class="sq q1" width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+    <rect x="5" y="5" width="50" height="50" rx="5" fill="none" stroke="#3E7BFA" stroke-width="3"/>
+  </svg>
+  <svg class="sq q2" width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="30,5 55,30 30,55 5,30" fill="#E06B9C" opacity=".55"/>
+  </svg>
+  <svg class="sq q3" width="70" height="70" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
+    <rect x="8" y="8" width="54" height="54" fill="#7F6BE0" opacity=".5"/>
+  </svg>
+  <svg class="sq q4" width="70" height="70" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="35" cy="35" r="30" fill="none" stroke="#F09B3D" stroke-width="3"/>
+  </svg>
+</div>
+
+<div class="app">
+  <div class="brand" id="brand">
+    <span class="brand-dot"></span>
+    <span>×3 · ×4 · ×5 · ×6 · :3 · :4 · :5 · :6</span>
+  </div>
+
+  <div class="topbar" id="topbar">
+    <div class="progress-wrap">
+      <div class="progress-bar"><div id="fill"></div></div>
+      <span id="counter">1 / 30</span>
+    </div>
+    <div class="timer" id="timer">00:00.00</div>
+  </div>
+
+  <div class="stage" id="stage">
+    <div class="equation" id="equation"></div>
+    <form id="answerForm" autocomplete="off">
+      <div class="input-wrap">
+        <input type="text" inputmode="numeric" pattern="[0-9]*" id="answer" maxlength="3" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="go">
+        <div class="correct-answer" id="correctAnswer"></div>
+      </div>
+    </form>
+
+    <div class="next-row">
+      <button class="next-btn" id="nextBtn" type="button"
+              aria-label="Следующий вопрос" title="Следующий вопрос (→)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h13"></path>
+          <path d="M12 5l7 7-7 7"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="final" id="final">
+    <div class="final-label">Время</div>
+    <div class="final-time" id="finalTime">00:00.00</div>
+    <div class="final-stats" id="finalStats"></div>
+
+    <div class="name-block" id="nameBlock">
+      <div class="name-label">Введи имя, чтобы сохранить результат</div>
+      <form class="name-form" id="nameForm" autocomplete="off">
+        <input type="text" class="name-input" id="playerName" maxlength="18"
+               placeholder="Имя" autocomplete="off" autocorrect="off"
+               spellcheck="false" enterkeyhint="done">
+        <button type="submit" class="restart small">Показать результат</button>
+      </form>
+    </div>
+
+    <div class="result-block" id="resultBlock">
+      <div class="result-hello" id="resultHello"></div>
+      <div class="result-grid" id="resultGrid"></div>
+      
+      <!-- Секция с ошибками -->
+      <div class="errors-container" id="errorsContainer"></div>
+
+      <div id="historyWrap"></div>
+    </div>
+
+    <button class="restart" onclick="restart()">Ещё раз</button>
+  </div>
+</div>
+
+<script>
+  const TOTAL = 30; // Ровно 30 примеров в тесте
+  const STORAGE_KEY = 'mult_div_3_4_5_6_30q_v1';
+
+  // Функция для генерации 30 УНИКАЛЬНЫХ/СЛУЧАЙНЫХ примеров из пула умножения и деления на 3, 4, 5 и 6
+  function generateProblems() {
+    const pool = [];
+    [3, 4, 5, 6].forEach(num => {
+      for (let b = 2; b <= 12; b++) {
+        // Умножение
+        pool.push({ a: num, b: b, op: '*', ans: num * b });
+        // Деление
+        pool.push({ a: num * b, b: num, op: '/', ans: b });
+      }
+    });
+
+    // Перемешиваем полный пул
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+
+    // Выбираем первыми 30 шт.
+    return pool.slice(0, TOTAL);
+  }
+
+  let problems = generateProblems();
+  let userErrors = []; // Хранилище ошибок текущей сессии
+
+  const stageEl = document.getElementById('stage');
+  const eqEl = document.getElementById('equation');
+  const inputEl = document.getElementById('answer');
+  const formEl = document.getElementById('answerForm');
+  const timerEl = document.getElementById('timer');
+  const fillEl = document.getElementById('fill');
+  const counterEl = document.getElementById('counter');
+  const correctAnswerEl = document.getElementById('correctAnswer');
+  const finalEl = document.getElementById('final');
+  const finalTimeEl = document.getElementById('finalTime');
+  const finalStatsEl = document.getElementById('finalStats');
+  const topbarEl = document.getElementById('topbar');
+  const brandEl = document.getElementById('brand');
+  const nextBtn = document.getElementById('nextBtn');
+  const nameBlockEl = document.getElementById('nameBlock');
+  const nameFormEl = document.getElementById('nameForm');
+  const nameInputEl = document.getElementById('playerName');
+  const resultBlockEl = document.getElementById('resultBlock');
+  const resultHelloEl = document.getElementById('resultHello');
+  const resultGridEl = document.getElementById('resultGrid');
+  const errorsContainerEl = document.getElementById('errorsContainer');
+  const historyWrapEl = document.getElementById('historyWrap');
+
+  let current = 0;
+  let correctCount = 0;
+  let wrongCount = 0;
+  let skippedCount = 0;
+  let locked = false;
+  let startTime = null;
+  let rafId = null;
+  let finished = false;
+  let lastTime = 0;
+
+  function formatTime(ms) {
+    const totalCs = Math.floor(ms / 10);
+    const cs = totalCs % 100;
+    const totalSec = Math.floor(totalCs / 100);
+    const sec = totalSec % 60;
+    const min = Math.floor(totalSec / 60);
+    return String(min).padStart(2, '0') + ':' +
+           String(sec).padStart(2, '0') + '.' +
+           String(cs).padStart(2, '0');
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
+  function tick() {
+    if (finished) return;
+    timerEl.textContent = formatTime(performance.now() - startTime);
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function startTimer() {
+    startTime = performance.now();
+    finished = false;
+    tick();
+  }
+
+  function stopTimer() {
+    finished = true;
+    if (rafId) cancelAnimationFrame(rafId);
+  }
+
+  function showQuestion() {
+    const p = problems[current];
+    const symbol = p.op === '*' ? ' ∙ ' : ' : ';
+    eqEl.textContent = p.a + symbol + p.b;
+    counterEl.textContent = (current + 1) + ' / ' + TOTAL;
+    fillEl.style.width = (current / TOTAL * 100) + '%';
+    inputEl.value = '';
+    correctAnswerEl.textContent = '';
+    stageEl.classList.remove('correct', 'wrong');
+    locked = false;
+    setTimeout(() => inputEl.focus(), 60);
+  }
+
+  function burstConfetti(x, y, count) {
+    const colors = ['#3E7BFA', '#7F6BE0', '#F09B3D', '#3DA673', '#E06B9C', '#FFC857', '#7CA3EF'];
+    for (let i = 0; i < count; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'confetti';
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 60 + Math.random() * 190;
+      const dx = Math.cos(angle) * dist;
+      const dy = Math.sin(angle) * dist - 80;
+      piece.style.left = x + 'px';
+      piece.style.top = y + 'px';
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.width = (5 + Math.random() * 6) + 'px';
+      piece.style.height = (7 + Math.random() * 9) + 'px';
+      piece.style.borderRadius = Math.random() < 0.4 ? '50%' : '2px';
+      piece.style.boxShadow = '0 0 10px ' + piece.style.background;
+      piece.style.setProperty('--dx', dx + 'px');
+      piece.style.setProperty('--dy', dy + 'px');
+      piece.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
+      piece.style.setProperty('--dur', (0.8 + Math.random() * 0.7) + 's');
+      document.body.appendChild(piece);
+      setTimeout(() => piece.remove(), 1800);
+    }
+  }
+
+  function sleep(ms) {
+    return new Promise(r => setTimeout(r, ms));
+  }
+
+  function goNext() {
+    current++;
+    if (current >= TOTAL) {
+      finish();
+    } else {
+      showQuestion();
+    }
+  }
+
+  async function submit() {
+    if (locked || finished) return;
+    const raw = inputEl.value.trim();
+    if (raw === '') return;
+    const val = parseInt(raw, 10);
+    if (isNaN(val)) return;
+
+    locked = true;
+    inputEl.blur();
+
+    const p = problems[current];
+    const correct = p.ans;
+
+    if (val === correct) {
+      correctCount++;
+      stageEl.classList.add('correct');
+      const rect = inputEl.getBoundingClientRect();
+      burstConfetti(rect.left + rect.width / 2, rect.top + rect.height / 2, 26);
+      await sleep(400);
+    } else {
+      wrongCount++;
+      // Записываем ошибку
+      userErrors.push({
+        eq: p.a + (p.op === '*' ? ' ∙ ' : ' : ') + p.b,
+        userAns: val,
+        correctAns: correct
+      });
+      correctAnswerEl.textContent = correct;
+      stageEl.classList.add('wrong');
+      await sleep(950);
+    }
+
+    goNext();
+  }
+
+  function skip() {
+    if (locked || finished) return;
+    locked = true;
+    inputEl.blur();
+    skippedCount++;
+    const p = problems[current];
+    userErrors.push({
+      eq: p.a + (p.op === '*' ? ' ∙ ' : ' : ') + p.b,
+      userAns: 'Пропущено',
+      correctAns: p.ans
+    });
+    stageEl.classList.remove('correct', 'wrong');
+    correctAnswerEl.textContent = '';
+    goNext();
+  }
+
+  function handleNext() {
+    if (locked || finished) return;
+    if (inputEl.value.trim() !== '') {
+      submit();
+    } else {
+      skip();
+    }
+  }
+
+  function finish() {
+    stopTimer();
+    fillEl.style.width = '100%';
+    lastTime = performance.now() - startTime;
+    finalTimeEl.textContent = formatTime(lastTime);
+    finalStatsEl.textContent = 'Правильно: ' + correctCount + ' из ' + TOTAL;
+
+    stageEl.style.display = 'none';
+    topbarEl.style.display = 'none';
+    brandEl.style.display = 'none';
+
+    nameBlockEl.style.display = '';
+    resultBlockEl.classList.remove('show');
+    nameInputEl.value = '';
+    finalEl.classList.add('show');
+    setTimeout(() => nameInputEl.focus(), 120);
+  }
+
+  function loadResults() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return [];
+      const arr = JSON.parse(raw);
+      return Array.isArray(arr) ? arr : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveResult(rec) {
+    const arr = loadResults();
+    arr.push(rec);
+    arr.sort((x, y) => (y.correct - x.correct) || (x.ms - y.ms) || (x.date - y.date));
+    const top = arr.slice(0, 10);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(top)); } catch (e) {}
+    return top;
+  }
+
+  function renderHistory(list, currentRec) {
+    if (!list.length) {
+      historyWrapEl.innerHTML = '';
+      return;
+    }
+    const medals = ['🥇', '🥈', '🥉'];
+    let html = '<div class="history-title">Лучшие результаты</div><div class="history-list">';
+    list.forEach((r, i) => {
+      const isCur = currentRec && r.date === currentRec.date;
+      html +=
+        '<div class="history-row' + (isCur ? ' current' : '') + '">' +
+          '<span class="h-rank">' + (medals[i] || (i + 1)) + '</span>' +
+          '<span class="h-name">' + escapeHtml(r.name) + '</span>' +
+          '<span class="h-score">' + r.correct + '/' + r.total + '</span>' +
+          '<span class="h-time">' + formatTime(r.ms) + '</span>' +
+        '</div>';
+    });
+    html += '</div>';
+    historyWrapEl.innerHTML = html;
+  }
+
+  function renderErrors() {
+    if (userErrors.length === 0) {
+      errorsContainerEl.innerHTML = `
+        <button class="errors-btn" style="border-color: rgba(61, 166, 115, 0.4); color: #1F7A4C; cursor: default;">
+          <span>Ошибок нет! Ты молодец! 👏</span>
+        </button>
+      `;
+      return;
+    }
+
+    let listHtml = '';
+    userErrors.forEach(err => {
+      listHtml += `
+        <div class="error-row">
+          <span class="err-eq">${err.eq} =</span>
+          <span class="err-user">${err.userAns}</span>
+          <span class="err-correct">Верно: ${err.correctAns}</span>
+        </div>
+      `;
+    });
+
+    errorsContainerEl.innerHTML = `
+      <button class="errors-btn" id="toggleErrorsBtn" type="button">
+        <span>Посмотреть ошибки (${userErrors.length})</span>
+        <span id="errArrow">▼</span>
+      </button>
+      <div class="errors-list" id="errorsList">
+        ${listHtml}
+      </div>
+    `;
+
+    const btn = document.getElementById('toggleErrorsBtn');
+    const list = document.getElementById('errorsList');
+    const arrow = document.getElementById('errArrow');
+
+    btn.addEventListener('click', () => {
+      const isShown = list.classList.toggle('show');
+      arrow.textContent = isShown ? '▲' : '▼';
+    });
+  }
+
+  function showResult() {
+    const name = (nameInputEl.value.trim() || 'Игрок').slice(0, 18);
+
+    const rec = {
+      name: name,
+      ms: lastTime,
+      correct: correctCount,
+      total: TOTAL,
+      date: Date.now()
+    };
+    const top = saveResult(rec);
+
+    if (correctCount === TOTAL) {
+      resultHelloEl.textContent = 'Идеально, ' + name + '! 🎉';
+    } else if (correctCount >= Math.ceil(TOTAL * 0.8)) {
+      resultHelloEl.textContent = 'Отличный результат, ' + name + '!';
+    } else if (correctCount >= Math.ceil(TOTAL * 0.5)) {
+      resultHelloEl.textContent = 'Хорошо, ' + name + '!';
+    } else {
+      resultHelloEl.textContent = 'Есть над чем поработать, ' + name + '!';
+    }
+
+    resultGridEl.innerHTML =
+      '<div class="result-item"><span class="ri-label">Время</span>' +
+        '<span class="ri-value">' + formatTime(lastTime) + '</span></div>' +
+      '<div class="result-item"><span class="ri-label">Правильно</span>' +
+        '<span class="ri-value">' + correctCount + ' / ' + TOTAL + '</span></div>' +
+      '<div class="result-item"><span class="ri-label">Ошибок</span>' +
+        '<span class="ri-value">' + wrongCount + '</span></div>' +
+      '<div class="result-item"><span class="ri-label">Пропущено</span>' +
+        '<span class="ri-value">' + skippedCount + '</span></div>';
+
+    renderErrors();
+    renderHistory(top, rec);
+
+    nameBlockEl.style.display = 'none';
+    resultBlockEl.classList.add('show');
+  }
+
+  function restart() {
+    problems = generateProblems(); // Генерируем 30 НОВЫХ случайных примеров
+    userErrors = []; // Очищаем список ошибок
+    current = 0;
+    correctCount = 0;
+    wrongCount = 0;
+    skippedCount = 0;
+    locked = false;
+    lastTime = 0;
+
+    stageEl.style.display = '';
+    topbarEl.style.display = '';
+    brandEl.style.display = '';
+    finalEl.classList.remove('show');
+    nameBlockEl.style.display = '';
+    resultBlockEl.classList.remove('show');
+    nameInputEl.value = '';
+    historyWrapEl.innerHTML = '';
+    errorsContainerEl.innerHTML = '';
+
+    startTimer();
+    showQuestion();
+  }
+
+  formEl.addEventListener('submit', (e) => {
+    e.preventDefault();
+    submit();
+  });
+
+  inputEl.addEventListener('input', () => {
+    inputEl.value = inputEl.value.replace(/[^0-9]/g, '');
+  });
+
+  inputEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.keyCode === 13) {
+      e.preventDefault();
+      e.stopPropagation();
+      submit();
+    }
+  });
+
+  nextBtn.addEventListener('click', handleNext);
+
+  document.addEventListener('keydown', (e) => {
+    if (finished) return;
+    if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      handleNext();
+    }
+  });
+
+  nameFormEl.addEventListener('submit', (e) => {
+    e.preventDefault();
+    showResult();
+  });
+
+  nameInputEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.keyCode === 13) {
+      e.preventDefault();
+      showResult();
+    }
+  });
+
+  showQuestion();
+  startTimer();
+</script>
+</body>
+</html>
